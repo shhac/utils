@@ -110,5 +110,8 @@ class Rational {
         this.denominator = numerator;
         return this;
     }
+    clone() {
+        return new Rational(this.numerator, this.denominator);
+    }
 }
 
