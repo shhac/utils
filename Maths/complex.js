@@ -5,7 +5,8 @@ class Complex {
     }
     toString() {
         if (this.real && this.imaginary) {
-            return `${this.real}${this.imaginary}i`;
+            const sign = this.imaginary > 0 ? '+' : '';
+            return `${this.real}${sign}${this.imaginary}i`;
         } else if (this.imaginary) {
             return `${this.imaginary}i`;
         }
@@ -85,6 +86,7 @@ class Complex {
         const r2i2 = this.real * this.real + this.imaginary * this.imaginary;
         this.real = this.real / r2i2;
         this.imaginary = -this.imaginary / r2i2;
+        return this;
     }
     clone() {
         return new Complex(this.real, this.imaginary);
