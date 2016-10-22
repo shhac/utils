@@ -60,6 +60,9 @@
             if (typeofResult !== 'object') {
                 return this.caseStart(typeofResult);
             }
+            if (obj === null) {
+                return 'Null';
+            }
             if (obj.constructor && obj.constructor.name) {
                 if (typeof obj.constructor.name === 'string') {
                     return obj.constructor.name;
