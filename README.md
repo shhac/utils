@@ -2,7 +2,7 @@
 
 A collection of useful utility functions
 
-# Math
+# Maths
 
 Some mathematical structures
 

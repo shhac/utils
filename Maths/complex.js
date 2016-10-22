@@ -3,6 +3,14 @@ class Complex {
         this.real = x;
         this.imaginary = y;
     }
+    toString() {
+        if (this.real && this.imaginary) {
+            return `${this.real}${this.imaginary}i`;
+        } else if (this.imaginary) {
+            return `${this.imaginary}i`;
+        }
+        return `${this.real}`;
+    }
     add(x) {
         if (typeof x === 'number') {
             this.real += x;
