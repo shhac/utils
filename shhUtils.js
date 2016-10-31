@@ -76,6 +76,24 @@
         sameType(haystackA, haystackB) {
             return this.getType(haystackA) === this.getType(haystackB);
         }
+        naturalSort(arr) {
+            const convert = text => /^\d+$/.test(text) ? +text : text;
+            const keyMapper = key => key.split(/(\d+)/).map(convert);
+            const dict = arr.reduce((dict, key) => (dict[key] = keyMapper(key), dict), Object.create(null));
+            arr.sort((a, b) => {
+                const aa = dict[a];
+                const bb = dict[b];
+                let i = 0; j = Math.min(aa.length, bb.length);
+                for (; i < j; ++i) {
+                    if (aa[i] < bb[i]) return -1;
+                    if (aa[i] > bb[i]) return 1;
+                }
+                if (aa.length < bb.length) return -1;
+                if (aa.length > bb.length) return 1;
+                return 0;
+            });
+            return arr;
+        }
     }
     
     const shhUtils = new ShhUtils(); 
