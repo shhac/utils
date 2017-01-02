@@ -118,6 +118,32 @@
                 return invoke(env);
             };
         }
+        rateLimitP(fn, ms, queue = true, context) {
+            let canInvoke = true;
+            const queued = [];
+            const forceContext = typeof context !== 'undefined';
+            function addToQueue(env) {
+                if (!queue) new Promise((res, rej) => rej('Queue disabled'));
+                return new Promise((res, rej) => {
+                    queued.push({res, rej});
+                }).then(() => invoke(env));
+            }
+            function nextInQueue() {
+                if (!queued.length) return canInvoke = true;
+                queued.shift().res();
+            }
+            function invoke(env) {
+                canInvoke = false;
+                const ctx = forceContext ? context : env.context;
+                global.setTimeout(nextInQueue, ms);
+                return fn.apply(ctx, env.args);
+            }
+            return function (...args) {
+                const env = {context: this, args};
+                if (!canInvoke) return addToQueue(env);
+                return Promise.resolve(invoke(env));
+            };
+        }
     }
 
     const shhUtils = new ShhUtils();
