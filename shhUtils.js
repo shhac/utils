@@ -1,4 +1,4 @@
-(function (frameworkName = '__', global = window, setGlobal = true) {
+(function (frameworkName = '__', setGlobal = true, global = window) {
     class ShhUtils {
         caseStart(str) {
             const re = /(?:^|\s)\w/g;
@@ -43,11 +43,11 @@
         swap(haystack, i, j) {
             const haystackType = this.getType(haystack);
             if (haystackType === 'String') {
-                return haystack.slice(0, i) +
-                    this.itemAt(haystack, j) +
-                    haystack.slice(i + 1, j) +
-                    this.itemAt(haystack, i) +
-                    (j + 1 === 0 ? '' : haystack.slice(j + 1));
+                return haystack.slice(0, i)
+                    + this.itemAt(haystack, j)
+                    + haystack.slice(i + 1, j)
+                    + this.itemAt(haystack, i)
+                    + (j + 1 === 0 ? '' : haystack.slice(j + 1));
             }
             const iValue = this.itemAt(haystack, i);
             const jValue = this.itemAt(haystack, j);
@@ -94,12 +94,35 @@
             });
             return arr;
         }
+        rateLimit(fn, ms, queue = true, context) {
+            let canInvoke = true;
+            const queued = [];
+            const forceContext = typeof context !== 'undefined';
+            function addToQueue(env) {
+                if (!queue) return;
+                queued.push(env);
+            }
+            function nextInQueue() {
+                if (!queued.length) return canInvoke = true;
+                invoke(queued.shift());
+            }
+            function invoke(env) {
+                canInvoke = false;
+                const ctx = forceContext ? context : env.context;
+                global.setTimeout(nextInQueue, ms);
+                return fn.apply(ctx, env.args);
+            }
+            return function (...args) {
+                const env = {context: this, args};
+                if (!canInvoke) return addToQueue(env);
+                return invoke(env);
+            };
+        }
     }
-    
-    const shhUtils = new ShhUtils(); 
+
+    const shhUtils = new ShhUtils();
     if (setGlobal) {
         global[frameworkName] = shhUtils;
     }
     return shhUtils;
 }());
-
